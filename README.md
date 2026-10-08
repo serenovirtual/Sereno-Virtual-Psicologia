@@ -12,6 +12,22 @@ App móvil de bienestar emocional con **un menú de 3 juegos cortos** (1 a 3 min
 
 `index.html` es un prototipo funcional de los 3 juegos. No necesita instalación: ábrelo en el navegador del celular (o en el modo móvil del navegador de escritorio).
 
+## Publicar gratis con un enlace (sin Play Store)
+
+La app es una **app web instalable (PWA)**: se abre con un enlace y, desde Chrome, se puede agregar a la pantalla de inicio como cualquier app. Funciona sin internet después de la primera visita.
+
+**Activar GitHub Pages (gratis, una sola vez):**
+1. En GitHub, abre el repositorio → **Settings** → **Pages**.
+2. En *Build and deployment* → *Source*, elige **Deploy from a branch**.
+3. En *Branch*, elige la rama con el código (hoy: `claude/sereno-virtual-psychology-games-dyobu8`, o `main` si la crean) y la carpeta **/ (root)**. Pulsa **Save**.
+4. En 1 o 2 minutos la app queda en: **https://serenovirtual.github.io/Sereno-Virtual-Psicologia/**
+
+Cada vez que se suban cambios a esa rama, el enlace se actualiza solo.
+
+**Instalarla en el celular:**
+- **Android (Chrome):** abre el enlace → menú ⋮ → **Instalar app** (o “Agregar a pantalla de inicio”).
+- **iPhone (Safari):** abre el enlace → botón **Compartir** → **Agregar a inicio**.
+
 ---
 
 ## Los 3 juegos propuestos

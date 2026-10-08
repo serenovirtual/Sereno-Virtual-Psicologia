@@ -370,6 +370,28 @@ button:focus-visible, input:focus-visible, .card:focus-visible { outline: 3px so
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
   };
 
+  /* ---------- Estadísticas anónimas (GoatCounter) ----------
+     Solo cuenta visitas y qué juegos se abren o se terminan.
+     Nunca envía lo que la persona escribe ni sus respuestas.
+     Para activarlo, escribe entre las comillas el nombre de la cuenta de GoatCounter. */
+  const GOATCOUNTER = '';
+  const pending = [];
+  function track(path, title) {
+    if (!GOATCOUNTER) return;
+    const gc = window.goatcounter;
+    if (gc && gc.count) { try { gc.count({ path, title, event: true }); } catch {} }
+    else pending.push([path, title]);
+  }
+  if (GOATCOUNTER) {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://gc.zgo.at/count.js';
+    s.dataset.goatcounter = `https://${GOATCOUNTER}.goatcounter.com/count`;
+    s.onload = () => pending.splice(0).forEach(a => track(...a));
+    document.head.appendChild(s);
+  }
+  const GAME_NAMES = { respira: 'Respira con la Luna', detective: 'Detective de Pensamientos', jardin: 'Jardín de Gratitud' };
+
   /* ---------- Navegación ---------- */
   const screens = ['home', 'respira', 'detective', 'jardin'];
   function show(id) {
@@ -378,6 +400,7 @@ button:focus-visible, input:focus-visible, .card:focus-visible { outline: 3px so
     if (id !== 'respira') Breath.stop(true);
     if (id === 'detective') Detective.start();
     if (id === 'jardin') Garden.render();
+    if (GAME_NAMES[id]) track('abrio-' + id, 'Abrió ' + GAME_NAMES[id]);
     window.scrollTo(0, 0);
   }
   $$('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.go; }));
@@ -465,6 +488,7 @@ button:focus-visible, input:focus-visible, .card:focus-visible { outline: 3px so
     function finish() {
       const pct = total ? Math.round(100 * match / total) : 0;
       stop(false);
+      track('termino-respira', 'Terminó Respira con la Luna');
       $('#phaseName').textContent = 'Muy bien';
       $('#phaseHint').textContent = 'Nota cómo está tu cuerpo ahora';
       $('#breathScore').textContent = pct + '%';
@@ -587,6 +611,7 @@ button:focus-visible, input:focus-visible, .card:focus-visible { outline: 3px so
           : score >= 5 ? 'Buen trabajo. Las interpretaciones a veces se disfrazan de hechos; ahora ya sabes reconocerlas.'
           : 'Es normal confundirlas: la mente cuenta historias muy convincentes. Practicar te ayuda a verlas.';
         $('#detResult').hidden = false;
+        track('termino-detective', 'Terminó Detective de Pensamientos');
       } else { $('#detPlay').hidden = false; draw(); }
     });
     $('#btnHecho').addEventListener('click', () => answer('hecho'));
@@ -672,6 +697,7 @@ button:focus-visible, input:focus-visible, .card:focus-visible { outline: 3px so
       if (flowers.length >= 30) flowers.shift();
       flowers.push({ text, date: today(), hue: Math.floor(Math.random() * HUES.length), petals: 5 + Math.floor(Math.random() * 4), x: freeX(), h: 80 + Math.random() * 110 });
       store.set(KEY, flowers);
+      track('termino-jardin', 'Plantó una flor en el Jardín');
       fresh = selected = flowers.length - 1;
       input.value = '';
       render();

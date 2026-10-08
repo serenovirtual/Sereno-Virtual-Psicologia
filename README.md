@@ -24,6 +24,10 @@ La app es una **app web instalable (PWA)**: se abre con un enlace y, desde Chrom
 
 Cada vez que se suban cambios a esa rama, el enlace se actualiza solo.
 
+**Código QR:** en la carpeta `qr/` están el QR solo y una tarjeta lista para imprimir o compartir.
+
+**Estadísticas (visitas y juego favorito):** la app ya está preparada para usar [GoatCounter](https://www.goatcounter.com), que es gratis y no usa cookies. Cuenta las visitas y cuántas veces se abre y se termina cada juego. Nunca envía lo que la persona escribe ni sus respuestas. Para activarlo, crea una cuenta en GoatCounter y escribe el nombre de la cuenta en `const GOATCOUNTER = ''` dentro de `index.html`.
+
 **Instalarla en el celular:**
 - **Android (Chrome):** abre el enlace → menú ⋮ → **Instalar app** (o “Agregar a pantalla de inicio”).
 - **iPhone (Safari):** abre el enlace → botón **Compartir** → **Agregar a inicio**.

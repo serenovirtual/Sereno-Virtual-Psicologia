@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sereno Virtual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: una sola columna tipo app (máx. 440px), pantallas que se intercambian; cada juego tiene su propio color. */
+:root {
+  --bg: #E8F0EF;
+  --surface: #F6FAF9;
+  --ink: #13252D;
+  --muted: #516B74;
+  --line: #C6D8D6;
+  --agua: #1D7572;
+  --lila: #5650BE;
+  --sol: #B07508;
+  --hoja: #357C45;
+  --alerta: #AE4436;
+  --on-accent: #FFFFFF;
+  --orb-a: #8FDCD2;
+  --orb-b: #2A8C88;
+  --sky-a: #DDEBF3;
+  --sky-b: #F3EEDC;
+  --soil: #8B6A4A;
+  --soil-b: #6E5238;
+  --shadow: 0 1px 2px rgba(19, 37, 45, .06), 0 8px 24px rgba(19, 37, 45, .07);
+  --font-display: "Young Serif", Georgia, "Times New Roman", serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D191E; --surface: #14242A; --ink: #E2EEED; --muted: #93ABB1; --line: #25393F;
+    --agua: #5BC2BA; --lila: #A19BF2; --sol: #E8B948; --hoja: #79C389; --alerta: #E68173;
+    --on-accent: #0D191E; --orb-a: #9BE6DC; --orb-b: #3BA59F;
+    --sky-a: #13283A; --sky-b: #1E2B33; --soil: #4A3A2B; --soil-b: #3A2D21;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D191E; --surface: #14242A; --ink: #E2EEED; --muted: #93ABB1; --line: #25393F;
+  --agua: #5BC2BA; --lila: #A19BF2; --sol: #E8B948; --hoja: #79C389; --alerta: #E68173;
+  --on-accent: #0D191E; --orb-a: #9BE6DC; --orb-b: #3BA59F;
+  --sky-a: #13283A; --sky-b: #1E2B33; --soil: #4A3A2B; --soil-b: #3A2D21;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+[hidden] { display: none !important; }
+.app {
+  max-width: 440px;
+  min-height: 100%;
+  margin: 0 auto;
+  padding-inline: 18px;
+  padding-block: 20px 28px;
+  display: flex;
+  flex-direction: column;
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; line-height: 1.15; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, .card:focus-visible { outline: 3px solid var(--agua); outline-offset: 2px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- Inicio ---------- */
+.home { display: flex; flex-direction: column; gap: 22px; flex: 1; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark { width: 34px; height: 34px; flex: none; }
+.brand-name { font-family: var(--font-display); font-size: 20px; }
+.hello h1 { font-size: 34px; }
+.hello p { color: var(--muted); margin-top: 8px; max-width: 32ch; }
+.menu { display: flex; flex-direction: column; gap: 14px; }
+.card {
+  --c: var(--agua);
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 4px 16px;
+  align-items: center;
+  text-align: left;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: transform .15s ease;
+}
+.card:active { transform: scale(.98); }
+.card .pic { grid-row: span 3; width: 64px; height: 64px; border-radius: 16px; background: color-mix(in srgb, var(--c) 14%, transparent); display: grid; place-items: center; }
+.card .pic svg { width: 40px; height: 40px; }
+.card .tag { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--c); }
+.card h2 { font-size: 21px; }
+.card p { font-size: 14px; color: var(--muted); }
+.card.c-lila { --c: var(--lila); }
+.card.c-sol { --c: var(--sol); }
+.note { margin-top: auto; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+
+/* ---------- Cabecera de juego ---------- */
+.screen { display: flex; flex-direction: column; gap: 18px; flex: 1; }
+.topbar { display: flex; align-items: center; gap: 12px; }
+.back { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; flex: none; }
+.back svg { width: 20px; height: 20px; }
+.topbar h2 { font-size: 24px; }
+.topbar .eyebrow { display: block; }
+.lead { color: var(--muted); font-size: 15px; }
+.btn {
+  border: 0; border-radius: 999px; padding: 14px 22px; font-weight: 600;
+  background: var(--accent, var(--agua)); color: var(--on-accent);
+}
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+  padding: 8px 14px; font-size: 14px; font-weight: 500;
+}
+.chip[aria-pressed="true"] { background: var(--accent, var(--agua)); border-color: transparent; color: var(--on-accent); }
+
+/* ---------- Respira ---------- */
+#respira { --accent: var(--agua); }
+.stage {
+  position: relative; flex: 1; min-height: 330px; border-radius: 28px;
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--agua) 16%, var(--surface)) 0%, var(--surface) 70%);
+  border: 1px solid var(--line);
+  display: grid; place-items: center; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none;
+}
+.orbs { position: relative; width: 240px; height: 240px; max-width: 70vw; max-height: 70vw; }
+.guide, .orb { position: absolute; inset: 0; border-radius: 50%; transform: scale(.5); }
+.guide { border: 2px dashed color-mix(in srgb, var(--agua) 70%, transparent); }
+.orb {
+  background: radial-gradient(circle at 38% 32%, var(--orb-a), var(--orb-b) 70%);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--orb-a) 60%, transparent);
+  opacity: .92;
+}
+.orb.on { box-shadow: 0 0 60px var(--orb-a); }
+.phase { position: absolute; top: 18px; left: 0; right: 0; text-align: center; }
+.phase strong { display: block; font-family: var(--font-display); font-weight: 400; font-size: 26px; }
+.phase span { color: var(--muted); font-size: 14px; }
+.count { position: absolute; font-family: var(--font-display); font-size: 40px; color: var(--on-accent); font-variant-numeric: tabular-nums; pointer-events: none; }
+.meter { position: absolute; bottom: 16px; left: 18px; right: 18px; display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.result { border: 1px solid var(--line); background: var(--surface); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.result .big { font-family: var(--font-display); font-size: 44px; color: var(--accent); line-height: 1; font-variant-numeric: tabular-nums; }
+
+/* ---------- Detective ---------- */
+#detective { --accent: var(--lila); }
+.deck { position: relative; flex: 1; min-height: 300px; display: grid; place-items: center; }
+.swipe-card {
+  position: absolute; inset: 8px 4px; border-radius: 24px; background: var(--surface);
+  border: 1px solid var(--line); box-shadow: var(--shadow);
+  display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 26px;
+  touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab;
+}
+.swipe-card.behind { transform: scale(.95) translateY(10px); opacity: .6; pointer-events: none; }
+.swipe-card .quote { font-family: var(--font-display); font-size: 25px; line-height: 1.25; }
+.swipe-card .hint { font-size: 13px; color: var(--muted); }
+.stamp {
+  position: absolute; top: 20px; padding: 4px 10px; border: 2px solid currentColor; border-radius: 8px;
+  font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 13px; opacity: 0;
+}
+.stamp.l { left: 20px; color: var(--agua); transform: rotate(-8deg); }
+.stamp.r { right: 20px; color: var(--lila); transform: rotate(8deg); }
+.answer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.answer-row .btn { padding: 14px 10px; }
+.answer-row .btn.hecho { background: var(--agua); }
+.progress { height: 6px; border-radius: 6px; background: var(--line); overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--lila); transition: width .3s ease; }
+.feedback { border-radius: 20px; padding: 18px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.feedback .verdict { font-weight: 700; }
+.feedback .ok { color: var(--hoja); }
+.feedback .no { color: var(--alerta); }
+.feedback .alt { border-left: 3px solid var(--lila); padding-left: 12px; font-size: 15px; }
+.feedback small { color: var(--muted); font-size: 13px; }
+
+/* ---------- Jardín ---------- */
+#jardin { --accent: var(--hoja); }
+.garden {
+  position: relative; border-radius: 24px; overflow: hidden; border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--sky-a), var(--sky-b));
+  aspect-ratio: 4 / 3; max-width: 100%;
+}
+.garden svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.flower { cursor: pointer; transform-box: fill-box; transform-origin: 50% 100%; }
+.flower.grow { animation: grow .9s cubic-bezier(.2, .9, .3, 1.2) both; }
+.flower.sel .petal { stroke: var(--ink); stroke-width: 1.5; }
+@keyframes grow { from { transform: scale(0); } to { transform: scale(1); } }
+.plant { display: flex; flex-direction: column; gap: 10px; }
+.plant label { font-weight: 600; }
+.plant-row { display: flex; gap: 8px; }
+.plant input {
+  flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  border-radius: 14px; padding: 12px 14px; font: inherit;
+}
+.memo { border: 1px solid var(--line); background: var(--surface); border-radius: 18px; padding: 14px 16px; font-size: 15px; }
+.memo small { display: block; color: var(--muted); font-size: 13px; margin-top: 4px; }
+.stats { display: flex; gap: 18px; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stats b { color: var(--ink); font-size: 18px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= INICIO ================= -->
+  <main id="home" class="home">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 34 34" aria-hidden="true">
+        <circle cx="17" cy="17" r="16" fill="var(--agua)"/>
+        <path d="M6 20c3.5-3 7.5-3 11 0s7.5 3 11 0" stroke="var(--on-accent)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <circle cx="22" cy="11" r="3" fill="var(--on-accent)"/>
+      </svg>
+      <span class="brand-name">Sereno Virtual</span>
+    </div>
+
+    <div class="hello">
+      <h1 id="greet">Hola. ¿Qué necesitas hoy?</h1>
+      <p>Tres juegos cortos para calmar el cuerpo, ordenar los pensamientos y entrenar la gratitud.</p>
+    </div>
+
+    <nav class="menu" aria-label="Juegos">
+      <button class="card" data-go="respira">
+        <span class="pic" aria-hidden="true">
+          <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="var(--agua)" stroke-width="2" stroke-dasharray="3 3"/><circle cx="20" cy="20" r="10" fill="var(--agua)"/></svg>
+        </span>
+        <span class="tag">Calma el cuerpo · 2 min</span>
+        <h2>Respira con la Luna</h2>
+        <p>Mantén el dedo para inhalar y suéltalo para exhalar. Sigue el ritmo de la guía.</p>
+      </button>
+
+      <button class="card c-lila" data-go="detective">
+        <span class="pic" aria-hidden="true">
+          <svg viewBox="0 0 40 40"><circle cx="17" cy="17" r="10" fill="none" stroke="var(--lila)" stroke-width="3"/><path d="M24.5 24.5 33 33" stroke="var(--lila)" stroke-width="4" stroke-linecap="round"/></svg>
+        </span>
+        <span class="tag">Ordena la mente · 3 min</span>
+        <h2>Detective de Pensamientos</h2>
+        <p>Desliza cada frase: ¿es un hecho o una interpretación tuya?</p>
+      </button>
+
+      <button class="card c-sol" data-go="jardin">
+        <span class="pic" aria-hidden="true">
+          <svg viewBox="0 0 40 40"><path d="M20 36V20" stroke="var(--hoja)" stroke-width="3" stroke-linecap="round"/><g fill="var(--sol)"><circle cx="20" cy="9" r="5"/><circle cx="27" cy="14" r="5"/><circle cx="13" cy="14" r="5"/><circle cx="20" cy="19" r="5"/></g><circle cx="20" cy="14" r="3.5" fill="var(--surface)"/></svg>
+        </span>
+        <span class="tag">Entrena lo bueno · 1 min</span>
+        <h2>Jardín de Gratitud</h2>
+        <p>Escribe algo que agradeces y planta una flor. Tu jardín crece cada día.</p>
+      </button>
+    </nav>
+
+    <p class="note">Sereno Virtual acompaña tu bienestar, pero no reemplaza a un psicólogo. Si sientes que estás en peligro, contacta a la línea de emergencias de tu país.</p>
+  </main>
+
+  <!-- ================= RESPIRA ================= -->
+  <section id="respira" class="screen" hidden>
+    <div class="topbar">
+      <button class="back" data-back aria-label="Volver al menú"><svg viewBox="0 0 20 20"><path d="M12.5 4 6.5 10l6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div><span class="eyebrow">Respiración guiada</span><h2>Respira con la Luna</h2></div>
+    </div>
+
+    <div class="chips" role="group" aria-label="Tipo de respiración" id="patterns">
+      <button class="chip" data-pattern="cuadrada" aria-pressed="true">Cuadrada 4·4·4·4</button>
+      <button class="chip" data-pattern="relajante" aria-pressed="false">Relajante 4·7·8</button>
+      <button class="chip" data-pattern="coherente" aria-pressed="false">Coherente 5·5</button>
+    </div>
+
+    <div class="stage" id="stage" aria-live="polite">
+      <div class="phase"><strong id="phaseName">Toca para empezar</strong><span id="phaseHint">Luego mantén el dedo para inhalar</span></div>
+      <div class="orbs"><div class="guide" id="guide"></div><div class="orb" id="orb"></div></div>
+      <span class="count" id="count"></span>
+      <div class="meter"><span id="cycleTxt">Ciclo 0 de 4</span><span id="syncTxt">Sincronía —</span></div>
+    </div>
+
+    <div class="result" id="breathResult" hidden>
+      <span class="eyebrow">Tu sincronía</span>
+      <span class="big" id="breathScore">0%</span>
+      <p id="breathMsg"></p>
+      <div class="row"><button class="btn" id="breathAgain">Otra ronda</button><button class="btn ghost" data-back>Volver al menú</button></div>
+    </div>
+    <p class="lead" id="breathTip">La luna punteada es la guía. Tu luna crece mientras mantienes presionado. Intenta que ambas se muevan juntas.</p>
+  </section>
+
+  <!-- ================= DETECTIVE ================= -->
+  <section id="detective" class="screen" hidden>
+    <div class="topbar">
+      <button class="back" data-back aria-label="Volver al menú"><svg viewBox="0 0 20 20"><path d="M12.5 4 6.5 10l6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div><span class="eyebrow">Reestructuración cognitiva</span><h2>Detective de Pensamientos</h2></div>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="detProgress"></i></div>
+
+    <div id="detPlay" class="screen">
+      <div class="deck" id="deck"></div>
+      <div class="answer-row">
+        <button class="btn hecho" id="btnHecho">← Hecho</button>
+        <button class="btn" id="btnInterp">Interpretación →</button>
+      </div>
+    </div>
+
+    <div class="feedback" id="detFeedback" hidden>
+      <span class="verdict" id="fbVerdict"></span>
+      <p id="fbWhy"></p>
+      <p class="alt" id="fbAlt" hidden></p>
+      <button class="btn" id="fbNext">Siguiente pista</button>
+    </div>
+
+    <div class="result" id="detResult" hidden>
+      <span class="eyebrow">Caso resuelto</span>
+      <span class="big" id="detScore">0/8</span>
+      <p id="detMsg"></p>
+      <p class="lead">Truco para la vida real: cuando una idea te duela, pregúntate “¿qué vi o escuché exactamente?” y “¿qué otra explicación podría haber?”.</p>
+      <div class="row"><button class="btn" id="detAgain">Nuevo caso</button><button class="btn ghost" data-back>Volver al menú</button></div>
+    </div>
+  </section>
+
+  <!-- ================= JARDÍN ================= -->
+  <section id="jardin" class="screen" hidden>
+    <div class="topbar">
+      <button class="back" data-back aria-label="Volver al menú"><svg viewBox="0 0 20 20"><path d="M12.5 4 6.5 10l6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div><span class="eyebrow">Psicología positiva</span><h2>Jardín de Gratitud</h2></div>
+    </div>
+
+    <div class="garden" id="garden"><svg id="gardenSvg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Tu jardín de gratitud"></svg></div>
+    <div class="stats"><span><b id="stFlowers">0</b> <span id="stFlowersL">flores</span></span><span><b id="stDays">0</b> <span id="stDaysL">días cultivando</span></span></div>
+    <div class="memo" id="memo">Toca una flor para leer lo que agradeciste.</div>
+
+    <form class="plant" id="plantForm" autocomplete="off">
+      <label for="gratitude">Hoy agradezco…</label>
+      <div class="chips" id="seeds">
+        <button type="button" class="chip" data-p="Una persona que me ayudó hoy fue…">Una persona</button>
+        <button type="button" class="chip" data-p="Algo pequeño que disfruté fue…">Algo pequeño</button>
+        <button type="button" class="chip" data-p="Agradezco a mi cuerpo porque…">Mi cuerpo</button>
+        <button type="button" class="chip" data-p="Algo que hice bien hoy fue…">Un logro</button>
+      </div>
+      <div class="plant-row">
+        <input id="gratitude" maxlength="120" placeholder="el café tibio de la mañana">
+        <button class="btn" type="submit">Plantar</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+
+  /* ---------- Navegación ---------- */
+  const screens = ['home', 'respira', 'detective', 'jardin'];
+  function show(id) {
+    if (!screens.includes(id)) id = 'home';
+    screens.forEach(s => { $('#' + s).hidden = s !== id; });
+    if (id !== 'respira') Breath.stop(true);
+    if (id === 'detective') Detective.start();
+    if (id === 'jardin') Garden.render();
+    window.scrollTo(0, 0);
+  }
+  $$('[data-go]').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.go; }));
+  $$('[data-back]').forEach(b => b.addEventListener('click', () => { location.hash = 'inicio'; }));
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+
+  const h = new Date().getHours();
+  $('#greet').textContent = h < 12 ? 'Buenos días. ¿Qué necesitas hoy?' : h < 19 ? 'Buenas tardes. ¿Qué necesitas hoy?' : 'Buenas noches. ¿Qué necesitas hoy?';
+
+  /* ================= JUEGO 1: RESPIRA ================= */
+  const Breath = (() => {
+    const PATTERNS = {
+      cuadrada: [['in', 4], ['hold', 4], ['out', 4], ['rest', 4]],
+      relajante: [['in', 4], ['hold', 7], ['out', 8]],
+      coherente: [['in', 5], ['out', 5]]
+    };
+    const LABEL = {
+      in: ['Inhala', 'Mantén el dedo presionado'],
+      hold: ['Sostén el aire', 'Sigue presionando'],
+      out: ['Exhala despacio', 'Suelta el dedo'],
+      rest: ['Pausa', 'Sin tocar, solo descansa']
+    };
+    const CYCLES = 4, MIN = .5, MAX = 1;
+    let pattern = 'cuadrada', raf = 0, running = false, pressing = false;
+    let t0 = 0, last = 0, userScale = MIN, match = 0, total = 0;
+    const stage = $('#stage'), guide = $('#guide'), orb = $('#orb');
+
+    $$('#patterns .chip').forEach(c => c.addEventListener('click', () => {
+      pattern = c.dataset.pattern;
+      $$('#patterns .chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+      stop(true);
+    }));
+
+    const ease = x => .5 - Math.cos(Math.PI * x) / 2;
+    function phaseAt(sec) {
+      const seq = PATTERNS[pattern];
+      const len = seq.reduce((a, p) => a + p[1], 0);
+      const cycle = Math.floor(sec / len);
+      let t = sec % len;
+      for (const [name, d] of seq) {
+        if (t < d) return { cycle, name, p: t / d, left: Math.ceil(d - t) };
+        t -= d;
+      }
+    }
+    function guideScale(ph) {
+      if (ph.name === 'in') return MIN + (MAX - MIN) * ease(ph.p);
+      if (ph.name === 'out') return MAX - (MAX - MIN) * ease(ph.p);
+      return ph.name === 'hold' ? MAX : MIN;
+    }
+
+    function begin() {
+      running = true; match = 0; total = 0; userScale = MIN;
+      t0 = performance.now() + 3000; last = performance.now();
+      $('#breathResult').hidden = true; $('#breathTip').hidden = false;
+      raf = requestAnimationFrame(tick);
+    }
+    function tick(now) {
+      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      // tu luna sigue tu dedo con suavidad
+      const target = pressing ? MAX : MIN;
+      const speed = (MAX - MIN) / 3.5;
+      userScale += Math.sign(target - userScale) * Math.min(Math.abs(target - userScale), speed * dt);
+      orb.style.transform = `scale(${userScale})`;
+      orb.classList.toggle('on', pressing);
+
+      if (now < t0) {
+        $('#phaseName').textContent = 'Prepárate';
+        $('#phaseHint').textContent = 'Primero inhalas: mantén presionado';
+        $('#count').textContent = Math.ceil((t0 - now) / 1000);
+        guide.style.transform = `scale(${MIN})`;
+      } else {
+        const ph = phaseAt((now - t0) / 1000);
+        if (ph.cycle >= CYCLES) return finish();
+        guide.style.transform = `scale(${guideScale(ph)})`;
+        $('#phaseName').textContent = LABEL[ph.name][0];
+        $('#phaseHint').textContent = LABEL[ph.name][1];
+        $('#count').textContent = ph.left;
+        $('#cycleTxt').textContent = `Ciclo ${ph.cycle + 1} de ${CYCLES}`;
+        const want = ph.name === 'in' || ph.name === 'hold';
+        total += dt; if (want === pressing) match += dt;
+        $('#syncTxt').textContent = `Sincronía ${Math.round(100 * match / total)}%`;
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    function finish() {
+      const pct = total ? Math.round(100 * match / total) : 0;
+      stop(false);
+      $('#phaseName').textContent = 'Muy bien';
+      $('#phaseHint').textContent = 'Nota cómo está tu cuerpo ahora';
+      $('#breathScore').textContent = pct + '%';
+      $('#breathMsg').textContent = pct >= 85 ? 'Respiraste al ritmo de la guía casi todo el tiempo. Tu sistema nervioso lo agradece.'
+        : pct >= 60 ? 'Buen ritmo. Con unas rondas más te saldrá sin pensarlo.'
+        : 'Está bien perderse. Lo importante es volver a la respiración, una y otra vez.';
+      $('#breathResult').hidden = false; $('#breathTip').hidden = true;
+      const best = store.get('sv.breath.best', 0);
+      if (pct > best) store.set('sv.breath.best', pct);
+    }
+    function stop(reset) {
+      cancelAnimationFrame(raf); running = false;
+      if (reset) {
+        guide.style.transform = orb.style.transform = `scale(${MIN})`;
+        $('#phaseName').textContent = 'Toca para empezar';
+        $('#phaseHint').textContent = 'Luego mantén el dedo para inhalar';
+        $('#cycleTxt').textContent = `Ciclo 0 de ${CYCLES}`;
+        $('#syncTxt').textContent = 'Sincronía —';
+        $('#breathResult').hidden = true; $('#breathTip').hidden = false;
+      }
+      $('#count').textContent = '';
+    }
+
+    const down = e => { e.preventDefault(); pressing = true; if (!running) begin(); };
+    const up = () => { pressing = false; };
+    stage.addEventListener('pointerdown', down);
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => stage.addEventListener(ev, up));
+    document.addEventListener('keydown', e => { if (e.code === 'Space' && !$('#respira').hidden) { e.preventDefault(); if (!pressing) down(e); } });
+    document.addEventListener('keyup', e => { if (e.code === 'Space') up(); });
+    $('#breathAgain').addEventListener('click', () => { stop(true); });
+    return { stop };
+  })();
+
+  /* ================= JUEGO 2: DETECTIVE ================= */
+  const Detective = (() => {
+    const CARDS = [
+      { t: 'Mi amiga no ha contestado mi mensaje en 3 horas.', k: 'hecho', why: 'Es algo que puedes comprobar: pasaron 3 horas sin respuesta. Si añades “está enojada conmigo”, eso ya sería una interpretación.' },
+      { t: 'Me equivoqué en una pregunta del examen.', k: 'hecho', why: 'Describe lo que pasó sin juzgarte. Un error concreto no te define.' },
+      { t: 'Anoche dormí 5 horas.', k: 'hecho', why: 'Es un dato medible. Te ayuda a entender por qué hoy puedes estar más sensible.' },
+      { t: 'Mi jefe me pidió corregir el informe.', k: 'hecho', why: 'Es lo que ocurrió. “Me pidió corregirlo porque soy malo” sería una interpretación.' },
+      { t: 'En la reunión hablé dos veces.', k: 'hecho', why: 'Es observable y cualquiera lo confirmaría.' },
+      { t: 'Cancelaron el paseo porque llovió.', k: 'hecho', why: 'Es un suceso concreto, sin juicio sobre ti ni sobre otros.' },
+      { t: 'Mi amiga ya no me quiere.', k: 'interp', d: 'Lectura de mente', why: 'Supones lo que otra persona siente sin que te lo haya dicho.', alt: 'Quizá está ocupada. Puedo preguntarle cómo está.' },
+      { t: 'Soy un fracaso.', k: 'interp', d: 'Etiquetado', why: 'Conviertes un momento difícil en una etiqueta sobre toda tu persona.', alt: 'Esto me salió mal, y puedo aprender de ello.' },
+      { t: 'Si fallo esta entrevista, nunca conseguiré trabajo.', k: 'interp', d: 'Catastrofización', why: 'Saltas al peor final posible y lo tratas como seguro.', alt: 'Una entrevista es una oportunidad, no la única.' },
+      { t: 'Siempre arruino todo.', k: 'interp', d: 'Generalización', why: '“Siempre” y “todo” borran las veces en que las cosas salieron bien.', alt: 'A veces me equivoco, y otras veces lo hago bien.' },
+      { t: 'Mi jefe piensa que soy incompetente.', k: 'interp', d: 'Lectura de mente', why: 'No sabes lo que piensa. Solo sabes lo que dijo o hizo.', alt: 'Me pidió cambios. Puedo preguntarle qué espera.' },
+      { t: 'Nadie me tomó en serio en la reunión.', k: 'interp', d: 'Pensamiento todo o nada', why: '“Nadie” es absoluto. ¿Hubo alguien que asintió o respondió?', alt: 'Algunas personas reaccionaron más que otras.' },
+      { t: 'Debería poder con todo sin ayuda.', k: 'interp', d: 'Exigencias “debería”', why: 'Es una regla rígida que te pones a ti, no un hecho.', alt: 'Pedir ayuda también es una forma de cuidarme.' },
+      { t: 'Me miraron raro, seguro hice el ridículo.', k: 'interp', d: 'Conclusión apresurada', why: 'Una mirada tiene muchas explicaciones posibles.', alt: 'No sé por qué me miraron. Puede no tener nada que ver conmigo.' }
+    ];
+    const ROUND = 8;
+    let deck = [], i = 0, score = 0, busy = false;
+    const deckEl = $('#deck');
+
+    function shuffle(a) { for (let j = a.length - 1; j > 0; j--) { const r = Math.floor(Math.random() * (j + 1)); [a[j], a[r]] = [a[r], a[j]]; } return a; }
+    function start() {
+      deck = shuffle(CARDS.slice()).slice(0, ROUND); i = 0; score = 0; busy = false;
+      $('#detResult').hidden = true; $('#detFeedback').hidden = true; $('#detPlay').hidden = false;
+      draw();
+    }
+    function cardEl(c, behind) {
+      const el = document.createElement('div');
+      el.className = 'swipe-card' + (behind ? ' behind' : '');
+      el.innerHTML = `<span class="stamp l">Hecho</span><span class="stamp r">Interpretación</span>
+        <span class="eyebrow">Pista ${behind ? i + 2 : i + 1} de ${ROUND}</span>
+        <p class="quote"></p><p class="hint">Desliza ← si es un hecho, → si es una interpretación</p>`;
+      el.querySelector('.quote').textContent = '“' + c.t + '”';
+      return el;
+    }
+    function draw() {
+      deckEl.innerHTML = '';
+      $('#detProgress').style.width = (100 * i / ROUND) + '%';
+      if (deck[i + 1]) deckEl.appendChild(cardEl(deck[i + 1], true));
+      const el = cardEl(deck[i], false);
+      deckEl.appendChild(el);
+      drag(el);
+    }
+    function drag(el) {
+      let x0 = 0, dx = 0, on = false;
+      const sl = el.querySelector('.stamp.l'), sr = el.querySelector('.stamp.r');
+      el.addEventListener('pointerdown', e => { if (busy) return; on = true; x0 = e.clientX; el.setPointerCapture(e.pointerId); el.style.transition = 'none'; });
+      el.addEventListener('pointermove', e => {
+        if (!on) return; dx = e.clientX - x0;
+        el.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
+        sl.style.opacity = Math.max(0, -dx / 90); sr.style.opacity = Math.max(0, dx / 90);
+      });
+      const end = () => {
+        if (!on) return; on = false; el.style.transition = 'transform .25s ease';
+        if (Math.abs(dx) > 90) answer(dx < 0 ? 'hecho' : 'interp');
+        else { el.style.transform = ''; sl.style.opacity = sr.style.opacity = 0; }
+        dx = 0;
+      };
+      el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+    }
+    function answer(k) {
+      if (busy || $('#detPlay').hidden) return; busy = true;
+      const c = deck[i], top = deckEl.lastElementChild;
+      top.style.transition = 'transform .3s ease, opacity .3s ease';
+      top.style.transform = `translateX(${k === 'hecho' ? -480 : 480}px) rotate(${k === 'hecho' ? -20 : 20}deg)`;
+      top.style.opacity = 0;
+      const ok = k === c.k; if (ok) score++;
+      setTimeout(() => {
+        $('#detPlay').hidden = true; $('#detFeedback').hidden = false;
+        const v = $('#fbVerdict');
+        v.className = 'verdict ' + (ok ? 'ok' : 'no');
+        v.textContent = (ok ? '¡Bien visto! ' : 'Casi. ') + (c.k === 'hecho' ? 'Es un hecho.' : `Es una interpretación: ${c.d}.`);
+        $('#fbWhy').textContent = c.why;
+        $('#fbAlt').hidden = !c.alt;
+        if (c.alt) $('#fbAlt').textContent = 'Pensamiento más equilibrado: “' + c.alt + '”';
+        $('#fbNext').textContent = i + 1 < ROUND ? 'Siguiente pista' : 'Ver resultado';
+        $('#detProgress').style.width = (100 * (i + 1) / ROUND) + '%';
+      }, 280);
+    }
+    $('#fbNext').addEventListener('click', () => {
+      i++; busy = false; $('#detFeedback').hidden = true;
+      if (i >= ROUND) {
+        $('#detScore').textContent = `${score}/${ROUND}`;
+        $('#detMsg').textContent = score >= 7 ? 'Ojo de detective. Separas muy bien lo que pasó de lo que tu mente añade.'
+          : score >= 5 ? 'Buen trabajo. Las interpretaciones a veces se disfrazan de hechos; ahora ya sabes reconocerlas.'
+          : 'Es normal confundirlas: la mente cuenta historias muy convincentes. Practicar te ayuda a verlas.';
+        $('#detResult').hidden = false;
+      } else { $('#detPlay').hidden = false; draw(); }
+    });
+    $('#btnHecho').addEventListener('click', () => answer('hecho'));
+    $('#btnInterp').addEventListener('click', () => answer('interp'));
+    $('#detAgain').addEventListener('click', start);
+    return { start };
+  })();
+
+  /* ================= JUEGO 3: JARDÍN ================= */
+  const Garden = (() => {
+    const KEY = 'sv.garden';
+    const HUES = ['var(--sol)', 'var(--lila)', 'var(--alerta)', 'var(--agua)', '#E7869B', '#F0A04B'];
+    const today = () => new Date().toISOString().slice(0, 10);
+    const examples = [
+      { text: 'La llamada con mi hermana', date: 'ejemplo', hue: 4, petals: 6, x: 90, h: 120, ex: true },
+      { text: 'Terminé el informe a tiempo', date: 'ejemplo', hue: 0, petals: 8, x: 210, h: 160, ex: true },
+      { text: 'El sol de la tarde en la ventana', date: 'ejemplo', hue: 1, petals: 5, x: 315, h: 105, ex: true }
+    ];
+    let flowers = store.get(KEY, null) || examples;
+    let selected = -1, fresh = -1;
+    const svg = $('#gardenSvg');
+    const NS = 'http://www.w3.org/2000/svg';
+
+    function flowerSvg(f, idx) {
+      const g = document.createElementNS(NS, 'g');
+      g.setAttribute('class', 'flower' + (idx === fresh ? ' grow' : '') + (idx === selected ? ' sel' : ''));
+      g.setAttribute('tabindex', '0');
+      g.setAttribute('role', 'button');
+      g.setAttribute('aria-label', 'Flor: ' + f.text);
+      const base = 262, top = base - f.h, color = HUES[f.hue % HUES.length], r = 9 + f.petals * .6;
+      let s = `<path d="M${f.x} ${base} C ${f.x - 8} ${base - f.h * .5}, ${f.x + 8} ${base - f.h * .6}, ${f.x} ${top}" stroke="var(--hoja)" stroke-width="3.5" fill="none"/>`;
+      s += `<ellipse cx="${f.x + 11}" cy="${base - f.h * .4}" rx="11" ry="5" fill="var(--hoja)" transform="rotate(-30 ${f.x + 11} ${base - f.h * .4})"/>`;
+      for (let p = 0; p < f.petals; p++) {
+        const a = 360 / f.petals * p;
+        s += `<ellipse class="petal" cx="${f.x}" cy="${top - r}" rx="${r * .55}" ry="${r}" fill="${color}" transform="rotate(${a} ${f.x} ${top})"/>`;
+      }
+      s += `<circle cx="${f.x}" cy="${top}" r="${r * .55}" fill="var(--surface)"/><circle cx="${f.x}" cy="${top}" r="${r * .3}" fill="${color}"/>`;
+      g.innerHTML = s;
+      const pick = () => { selected = idx; fresh = -1; render(); };
+      g.addEventListener('click', pick);
+      g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+      return g;
+    }
+    function render() {
+      svg.innerHTML = `<ellipse cx="330" cy="58" rx="26" ry="26" fill="var(--sol)" opacity=".35"/>
+        <path d="M0 262 Q 100 248 200 258 T 400 254 V 300 H 0 Z" fill="var(--soil)"/>
+        <path d="M0 278 Q 120 270 220 280 T 400 276 V 300 H 0 Z" fill="var(--soil-b)"/>`;
+      flowers.forEach((f, idx) => svg.appendChild(flowerSvg(f, idx)));
+      const real = flowers.filter(f => !f.ex);
+      $('#stFlowers').textContent = real.length;
+      const days = new Set(real.map(f => f.date)).size;
+      $('#stDays').textContent = days;
+      $('#stFlowersL').textContent = real.length === 1 ? 'flor' : 'flores';
+      $('#stDaysL').textContent = days === 1 ? 'día cultivando' : 'días cultivando';
+      const memo = $('#memo');
+      if (selected >= 0 && flowers[selected]) {
+        const f = flowers[selected];
+        memo.innerHTML = '';
+        memo.append(f.text);
+        const sm = document.createElement('small');
+        sm.textContent = f.ex ? 'Flor de ejemplo. Desaparece cuando plantes la tuya.' : 'Plantada el ' + new Date(f.date + 'T12:00').toLocaleDateString('es', { day: 'numeric', month: 'long' });
+        memo.appendChild(sm);
+      } else {
+        memo.textContent = flowers.some(f => f.ex)
+          ? 'Estas tres flores son de ejemplo. Toca una para leerla y luego planta la tuya.'
+          : 'Toca una flor para leer lo que agradeciste.';
+      }
+    }
+    function freeX() {
+      const used = flowers.map(f => f.x);
+      let best = 200, bestGap = -1;
+      for (let x = 30; x <= 370; x += 10) {
+        const gap = used.length ? Math.min(...used.map(u => Math.abs(u - x))) : 999;
+        if (gap > bestGap) { bestGap = gap; best = x; }
+      }
+      return best + (Math.random() * 8 - 4);
+    }
+    $('#plantForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const input = $('#gratitude'), text = input.value.trim();
+      if (!text) { input.placeholder = 'Escribe algo, por pequeño que sea'; input.focus(); return; }
+      if (flowers.some(f => f.ex)) flowers = [];
+      if (flowers.length >= 30) flowers.shift();
+      flowers.push({ text, date: today(), hue: Math.floor(Math.random() * HUES.length), petals: 5 + Math.floor(Math.random() * 4), x: freeX(), h: 80 + Math.random() * 110 });
+      store.set(KEY, flowers);
+      fresh = selected = flowers.length - 1;
+      input.value = '';
+      render();
+    });
+    $$('#seeds .chip').forEach(c => c.addEventListener('click', () => {
+      const input = $('#gratitude'); input.value = c.dataset.p + ' '; input.focus();
+    }));
+    return { render };
+  })();
+
+  show(location.hash.slice(1));
+})();
+</script>
+</body>
+</html>
